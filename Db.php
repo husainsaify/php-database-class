@@ -154,29 +154,33 @@ class Db{
     }
 
     //fetch method
-    public static function fetch($tableName,$whereArray = array(),$operator){
+    public static function fetch($tableName,$whereArray = array(),$operators = array()){
         if(empty($tableName))
             die("Enter table name");
 
         //check operator is valid
         $validOperator = array("=","!=",">","<",">=","<=");
-
-        if(!in_array($operator,$validOperator))
-            die("Invalid Operator");
-
-        if(count($whereArray) != 1)
-            die("Invalid Where Array");
-
-        //generate where string
-        $whereString = "";
-        foreach(array_keys($whereArray) as $where){
-            $whereString .= $where;
+        foreach($operators as $operator){
+            if(!in_array($operator,$validOperator)){
+                die("Invalid operator");
+            }
         }
 
-        $whereString .= $operator."?";
+        //generate $where string
+        $whereString = "";
+        $i = 0;
+        foreach(array_keys($whereArray) as $where){
+            $whereString .= $where;
+            $whereString .= $operators[$i]."?";
 
-        echo $whereString;
-        exit;
+            if($i < count($whereArray)-1){
+                $whereString .= " AND ";
+            }
+
+            $i++;
+        }
+
+        
         //execute the query
         $stmt = self::query("SELECT * FROM {$tableName} WHERE {$whereString}",array_values($whereArray));
 
