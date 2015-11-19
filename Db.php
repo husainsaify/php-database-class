@@ -186,4 +186,36 @@ class Db{
             return self::getError(); //return true (means their is a error)
         }
     }
+    
+    public static function rowCount($tableName,$whereArray = array(),$operators = array()){
+        if(empty($tableName))
+            die("Enter table name");
+
+        //check operator is valid
+        $validOperator = array("=","!=",">","<",">=","<=");
+        foreach($operators as $operator){
+            if(!in_array($operator,$validOperator)){
+                die("Invalid operator");
+            }
+        }
+
+
+        //generate $where string
+        $whereString = "";
+        $i = 0;
+        foreach(array_keys($whereArray) as $where){
+            $whereString .= $where;
+            $whereString .= $operators[$i]."?";
+
+            if($i < count($whereArray)-1){
+                $whereString .= " & ";
+            }
+
+            $i++;
+        }
+
+        $stmt = self::query("SELECT * FROM {$tableName} WHERE {$whereString}",array_values($whereArray));
+
+        return $stmt->rowCount();
+    }
 }
