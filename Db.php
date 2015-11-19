@@ -208,7 +208,7 @@ class Db{
             $whereString .= $operators[$i]."?";
 
             if($i < count($whereArray)-1){
-                $whereString .= " & ";
+                $whereString .= " AND ";
             }
 
             $i++;
